@@ -14,13 +14,15 @@ our $VERSION = '0.10';
 
 my $_engine;
 
-sub default_tmpl_ext { "caml" }
+sub default_tmpl_ext { return "caml" }
 
 sub init {
     my $self = shift;
 
     $_engine =
       Text::Caml->new( templates_path => setting('views'), %{ $self->config } );
+
+    return $_engine;
 }
 
 sub render {
@@ -31,7 +33,7 @@ sub render {
           or Carp::croak("'$template' doesn't exist or not a regular file");
     }
 
-    unless ( File::Spec->file_name_is_absolute($template) ) {
+    if ( ! File::Spec->file_name_is_absolute($template) ) {
         $template = File::Spec->abs2rel( $template, $_engine->templates_path );
     }
 
@@ -39,6 +41,8 @@ sub render {
 }
 
 1;
+
+__END__
 
 =head1 NAME
 
